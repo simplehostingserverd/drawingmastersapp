@@ -1,93 +1,182 @@
 # Drawing Masters App
 
-A professional art drawing application built with Next.js and TypeScript.
+A professional art drawing application with advanced features including Three.js for 3D drawing, real-time collaboration, AI-assisted drawing, and more.
 
 ## Features
 
-- 🚀 Server-side rendering with Next.js
-- ⚡️ Fast page transitions with App Router
-- 📦 Asset optimization and bundling
-- 🎨 Professional drawing tools
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [Next.js docs](https://nextjs.org/docs)
+- 🎨 Advanced drawing tools with Canvas API and Three.js
+- 🚀 Real-time collaboration with WebSockets
+- 🤖 AI-assisted drawing with Claude API
+- 🖼️ Image generation with Stable Diffusion
+- 📊 Vector database for similar drawing search
+- 📱 Responsive design with TailwindCSS
+- ✨ Smooth animations with Framer Motion
+- 🔒 TypeScript for type safety
+- 🌐 Next.js for server-side rendering
+- 🐳 Docker for containerization
+- ☁️ AWS-ready deployment
+- 🚀 Redis for caching and real-time features
+
+## Tech Stack
+
+- **Frontend**: React, TypeScript, Next.js, TailwindCSS, Three.js, Framer Motion
+- **Backend**: Node.js, Express, WebSockets, Redis
+- **AI**: Claude API, Stable Diffusion
+- **Database**: Pinecone Vector Database
+- **DevOps**: Docker, AWS
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 18+
+- pnpm 8+
+- Docker (optional, for containerization)
+- Redis (optional, for local development)
+
 ### Installation
 
-Install the dependencies using pnpm:
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/twinkiesdraw.git
+cd twinkiesdraw
+```
+
+2. Install dependencies:
 
 ```bash
 pnpm install
 ```
 
-### Development
+3. Set up environment variables:
 
-Start the development server:
+```bash
+cp .env.example .env.local
+# Edit .env.local with your API keys and configuration
+```
+
+4. Start the development server:
 
 ```bash
 pnpm dev
 ```
 
-Your application will be available at `http://localhost:3000`.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Building for Production
+### Server Setup
 
-Create a production build:
+1. Navigate to the server directory:
 
 ```bash
-pnpm build
+cd server
 ```
+
+2. Install server dependencies:
+
+```bash
+pnpm install
+```
+
+3. Set up server environment variables:
+
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+4. Start the server:
+
+```bash
+pnpm dev
+```
+
+## Development
+
+### Project Structure
+
+```
+twinkiesdraw/
+├── .husky/              # Git hooks
+├── public/              # Static assets
+├── server/              # Backend server
+│   ├── cache/           # Server-side caching
+│   ├── db/              # Database connections
+│   ├── routes/          # API routes
+│   └── index.ts         # Server entry point
+├── src/
+│   ├── app/             # Next.js app router
+│   ├── components/      # React components
+│   ├── hooks/           # Custom React hooks
+│   └── lib/             # Utility functions and libraries
+│       ├── ai/          # AI integrations
+│       ├── cache/       # Client-side caching
+│       ├── three/       # Three.js integrations
+│       ├── vectordb/    # Vector database integrations
+│       └── websocket/   # WebSocket client
+├── .env.example         # Example environment variables
+├── .eslintrc.json       # ESLint configuration
+├── .prettierrc          # Prettier configuration
+├── docker-compose.yml   # Docker Compose configuration
+├── Dockerfile           # Docker configuration
+└── package.json         # Project dependencies and scripts
+```
+
+### Available Scripts
+
+- `pnpm dev`: Start the development server
+- `pnpm build`: Build the application for production
+- `pnpm start`: Start the production server
+- `pnpm lint`: Run ESLint
+- `pnpm typecheck`: Run TypeScript type checking
+- `pnpm format`: Format code with Prettier
 
 ## Deployment
 
 ### Docker Deployment
 
-To build and run using Docker:
+1. Build the Docker images:
 
 ```bash
-docker build -t drawing-masters-app .
-
-# Run the container
-docker run -p 3000:3000 drawing-masters-app
+docker-compose build
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Vercel
-- Netlify
-
-### Vercel Deployment
-
-This app is optimized for deployment on Vercel:
+2. Start the containers:
 
 ```bash
-vercel
+docker-compose up -d
 ```
 
-### DIY Deployment
+### AWS Deployment
 
-If you're familiar with deploying Next.js applications, the built-in app server is production-ready.
+The application is configured for deployment on AWS using:
 
-Make sure to deploy the output of `pnpm build`
+- Amazon ECS for container orchestration
+- Amazon S3 for static assets
+- Amazon CloudFront for CDN
+- Amazon ElastiCache for Redis
+- Amazon EC2 or AWS Lambda for serverless functions
 
-```bash
-├── package.json
-├── pnpm-lock.yaml
-├── .next/
-│   ├── static/    # Static assets
-│   └── server/    # Server-side code
-```
+## Contributing
 
-## Styling
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-This application uses [Tailwind CSS](https://tailwindcss.com/) for styling, providing a clean and responsive user interface for the drawing application.
+## License
 
----
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Built with ❤️ using Next.js.
+## Acknowledgments
+
+- [Next.js](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [Three.js](https://threejs.org/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [Framer Motion](https://www.framer.com/motion/)
+- [Anthropic Claude](https://www.anthropic.com/)
+- [Stable Diffusion](https://stability.ai/)
+- [Pinecone](https://www.pinecone.io/)
+- [Redis](https://redis.io/)
