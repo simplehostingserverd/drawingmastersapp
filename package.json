@@ -1,6 +1,7 @@
 {
   "name": "twinkiesdraw",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -8,6 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc"
   },
+  "packageManager": "pnpm@8.15.0",
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

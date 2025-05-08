@@ -1,4 +1,35 @@
-.react-router
-build
+# Next.js build output
+.next
+out
+
+# Dependencies
 node_modules
+.pnpm-store
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Editor directories and files
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Git
+.git
+.gitignore
+
+# Documentation
 README.md
+LICENSE

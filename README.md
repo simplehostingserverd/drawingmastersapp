@@ -1,45 +1,43 @@
-# Welcome to React Router!
+# Drawing Masters App
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+A professional art drawing application built with Next.js and TypeScript.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
+- 🚀 Server-side rendering with Next.js
+- ⚡️ Fast page transitions with App Router
+- 📦 Asset optimization and bundling
+- 🎨 Professional drawing tools
 - 🔒 TypeScript by default
 - 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- 📖 [Next.js docs](https://nextjs.org/docs)
 
 ## Getting Started
 
 ### Installation
 
-Install the dependencies:
+Install the dependencies using pnpm:
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Development
 
-Start the development server with HMR:
+Start the development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+Your application will be available at `http://localhost:3000`.
 
 ## Building for Production
 
 Create a production build:
 
 ```bash
-npm run build
+pnpm build
 ```
 
 ## Deployment
@@ -49,10 +47,10 @@ npm run build
 To build and run using Docker:
 
 ```bash
-docker build -t my-app .
+docker build -t drawing-masters-app .
 
 # Run the container
-docker run -p 3000:3000 my-app
+docker run -p 3000:3000 drawing-masters-app
 ```
 
 The containerized application can be deployed to any platform that supports Docker, including:
@@ -61,27 +59,35 @@ The containerized application can be deployed to any platform that supports Dock
 - Google Cloud Run
 - Azure Container Apps
 - Digital Ocean App Platform
-- Fly.io
-- Railway
+- Vercel
+- Netlify
+
+### Vercel Deployment
+
+This app is optimized for deployment on Vercel:
+
+```bash
+vercel
+```
 
 ### DIY Deployment
 
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
+If you're familiar with deploying Next.js applications, the built-in app server is production-ready.
 
-Make sure to deploy the output of `npm run build`
+Make sure to deploy the output of `pnpm build`
 
-```
+```bash
 ├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
+├── pnpm-lock.yaml
+├── .next/
+│   ├── static/    # Static assets
 │   └── server/    # Server-side code
 ```
 
 ## Styling
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+This application uses [Tailwind CSS](https://tailwindcss.com/) for styling, providing a clean and responsive user interface for the drawing application.
 
 ---
 
-Built with ❤️ using React Router.
+Built with ❤️ using Next.js.

@@ -1,22 +1,26 @@
-FROM node:20-alpine AS development-dependencies-env
-COPY . /app
-WORKDIR /app
-RUN npm ci
+FROM node:20-alpine AS base
+RUN corepack enable
+RUN corepack prepare pnpm@8.15.0 --activate
 
-FROM node:20-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
+FROM base AS dependencies
 WORKDIR /app
-RUN npm ci --omit=dev
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile
 
-FROM node:20-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
+FROM base AS build
 WORKDIR /app
-RUN npm run build
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY . .
+RUN pnpm build
 
-FROM node:20-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
+FROM base AS production
 WORKDIR /app
-CMD ["npm", "run", "start"]
+ENV NODE_ENV=production
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/next.config.js ./next.config.js
+
+EXPOSE 3000
+CMD ["pnpm", "start"]
