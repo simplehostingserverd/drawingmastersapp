@@ -149,7 +149,7 @@ export function LayerPanel({
                     title="Move Up"
                     disabled={layers.indexOf(layer) === 0}
                   >
-                    <MoveUp size={16} />
+                    <LucideIcons.MoveUp size={16} />
                   </button>
                   <button
                     onClick={(e) => {
@@ -160,7 +160,7 @@ export function LayerPanel({
                     title="Move Down"
                     disabled={layers.indexOf(layer) === layers.length - 1}
                   >
-                    <MoveDown size={16} />
+                    <LucideIcons.MoveDown size={16} />
                   </button>
                   <button
                     onClick={(e) => {
@@ -174,7 +174,7 @@ export function LayerPanel({
                     }`}
                     title="Layer Settings"
                   >
-                    <Settings size={16} />
+                    <LucideIcons.Settings size={16} />
                   </button>
                   <button
                     onClick={(e) => {
@@ -185,7 +185,7 @@ export function LayerPanel({
                     title="Delete Layer"
                     disabled={layers.length <= 1}
                   >
-                    <Trash2 size={16} />
+                    <LucideIcons.Trash2 size={16} />
                   </button>
                 </div>
               </div>
@@ -259,7 +259,7 @@ export function LayerPanel({
                             className="mr-2 text-gray-600 hover:text-gray-900"
                             title={childLayer.visible ? 'Hide Layer' : 'Show Layer'}
                           >
-                            {childLayer.visible ? <Eye size={14} /> : <EyeOff size={14} />}
+                            {childLayer.visible ? <LucideIcons.Eye size={14} /> : <LucideIcons.EyeOff size={14} />}
                           </button>
                           <span className="text-xs truncate max-w-[80px]">{childLayer.name}</span>
                         </div>
