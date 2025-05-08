@@ -1,19 +1,14 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { Canvas, DrawingTool } from '../components/Canvas';
-import { ToolPanel } from '../components/ToolPanel';
-import { ColorPicker } from '../components/ColorPicker';
-import { LayerPanel, Layer, BlendMode } from '../components/LayerPanel';
-import { KeyboardShortcuts } from '../components/KeyboardShortcuts';
-import { FileManager } from '../components/FileManager';
-import { FiltersPanel, FilterSettings } from '../components/FiltersPanel';
-import { BrushSettings, BrushPreset } from '../components/BrushSettings';
+'use client';
 
-export function meta() {
-  return [
-    { title: "Drawing Masters App" },
-    { name: "description", content: "Professional Art Drawing Application" },
-  ];
-}
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { Canvas, DrawingTool } from '@/components/Canvas';
+import { ToolPanel } from '@/components/ToolPanel';
+import { ColorPicker } from '@/components/ColorPicker';
+import { LayerPanel, Layer, BlendMode } from '@/components/LayerPanel';
+import { KeyboardShortcuts } from '@/components/KeyboardShortcuts';
+import { FileManager } from '@/components/FileManager';
+import { FiltersPanel, FilterSettings } from '@/components/FiltersPanel';
+import { BrushSettings, BrushPreset } from '@/components/BrushSettings';
 
 // Project data structure
 interface Project {
@@ -73,38 +68,7 @@ export default function Draw() {
   const [brushHardness, setBrushHardness] = useState(100);
   const [brushFlow, setBrushFlow] = useState(100);
   const [brushSpacing, setBrushSpacing] = useState(0);
-  const [brushPresets, setBrushPresets] = useState<BrushPreset[]>([
-    {
-      id: 'preset-1',
-      name: 'Default',
-      size: 5,
-      opacity: 100,
-      hardness: 100,
-      flow: 100,
-      spacing: 0,
-      isEraser: false
-    },
-    {
-      id: 'preset-2',
-      name: 'Soft Brush',
-      size: 20,
-      opacity: 50,
-      hardness: 50,
-      flow: 80,
-      spacing: 10,
-      isEraser: false
-    },
-    {
-      id: 'preset-3',
-      name: 'Eraser',
-      size: 10,
-      opacity: 100,
-      hardness: 100,
-      flow: 100,
-      spacing: 0,
-      isEraser: true
-    }
-  ]);
+  const [brushPresets, setBrushPresets] = useState<BrushPreset[]>([]);
 
   // Filter settings
   const [filters, setFilters] = useState<FilterSettings>({
@@ -123,7 +87,11 @@ export default function Draw() {
   const [canvasWidth, setCanvasWidth] = useState(800);
   const [canvasHeight, setCanvasHeight] = useState(600);
 
-
+  // History state
+  const handleHistoryChange = useCallback((canUndo: boolean, canRedo: boolean) => {
+    setCanUndo(canUndo);
+    setCanRedo(canRedo);
+  }, []);
 
   // Layer management functions
   const handleLayerAdd = useCallback(() => {
@@ -141,13 +109,16 @@ export default function Draw() {
   }, [layers]);
 
   const handleLayerRemove = useCallback((layerId: string) => {
-    if (layers.length <= 1) return;
+    if (layers.length <= 1) {
+      alert('Cannot remove the last layer');
+      return;
+    }
 
     const newLayers = layers.filter((layer) => layer.id !== layerId);
     setLayers(newLayers);
 
-    if (activeLayerId === layerId) {
-      setActiveLayerId(newLayers[0].id);
+    if (layerId === activeLayerId) {
+      setActiveLayerId(newLayers[newLayers.length - 1].id);
     }
   }, [layers, activeLayerId]);
 
@@ -163,19 +134,19 @@ export default function Draw() {
 
   const handleLayerMoveUp = useCallback((layerId: string) => {
     const index = layers.findIndex((layer) => layer.id === layerId);
-    if (index <= 0) return;
+    if (index === layers.length - 1) return; // Already at the top
 
     const newLayers = [...layers];
-    [newLayers[index - 1], newLayers[index]] = [newLayers[index], newLayers[index - 1]];
+    [newLayers[index], newLayers[index + 1]] = [newLayers[index + 1], newLayers[index]];
     setLayers(newLayers);
   }, [layers]);
 
   const handleLayerMoveDown = useCallback((layerId: string) => {
     const index = layers.findIndex((layer) => layer.id === layerId);
-    if (index >= layers.length - 1) return;
+    if (index === 0) return; // Already at the bottom
 
     const newLayers = [...layers];
-    [newLayers[index], newLayers[index + 1]] = [newLayers[index + 1], newLayers[index]];
+    [newLayers[index], newLayers[index - 1]] = [newLayers[index - 1], newLayers[index]];
     setLayers(newLayers);
   }, [layers]);
 
@@ -344,7 +315,7 @@ export default function Draw() {
     setBrushPresets([...brushPresets, newPreset]);
   }, [brushPresets]);
 
-  // History functions
+  // Undo/Redo functions
   const handleUndo = useCallback(() => {
     if (!canvasRef.current) return;
 
@@ -361,35 +332,18 @@ export default function Draw() {
     if (redo) redo();
   }, []);
 
-  const handleHistoryChange = useCallback((canUndo: boolean, canRedo: boolean) => {
-    setCanUndo(canUndo);
-    setCanRedo(canRedo);
-  }, []);
-
-  // Handle keyboard shortcuts - moved after all handler functions are defined
+  // Keyboard shortcuts
   useEffect(() => {
-    // Only run in browser environment
-    if (typeof window === 'undefined') return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts if user is typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-
-      // Tool shortcuts
-      if (e.key === 'b' || e.key === 'B') setCurrentTool('brush');
-      if (e.key === 'e' || e.key === 'E') setCurrentTool('eraser');
-      if (e.key === 'p' || e.key === 'P') setCurrentTool('pencil');
-      if (e.key === 't' || e.key === 'T') setCurrentTool('text');
-      if (e.key === 's' || e.key === 'S') setCurrentTool('select');
-      if (e.key === 'r' || e.key === 'R') setCurrentTool('square');
-      if (e.key === 'c' || e.key === 'C') setCurrentTool('circle');
-      if (e.key === 'l' || e.key === 'L') setCurrentTool('line');
-
       // Undo/Redo
-      if (e.ctrlKey && e.key === 'z') handleUndo();
-      if (e.ctrlKey && e.key === 'y') handleRedo();
+      if (e.ctrlKey && e.key === 'z') {
+        e.preventDefault();
+        handleUndo();
+      }
+      if (e.ctrlKey && e.key === 'y') {
+        e.preventDefault();
+        handleRedo();
+      }
 
       // Save
       if (e.ctrlKey && e.key === 's') {
@@ -428,66 +382,65 @@ export default function Draw() {
         <h1 className="text-2xl font-bold text-center">Drawing Masters App</h1>
       </header>
 
-      <main className="flex flex-1 overflow-hidden p-4 gap-4">
-        {/* Sidebar tabs */}
-        <div className="w-64 flex flex-col gap-4">
-          <div className="bg-white rounded-md shadow-md overflow-hidden">
-            <div className="flex border-b">
+      <main className="flex-1 flex overflow-hidden">
+        {/* Left sidebar */}
+        <div className="w-64 bg-white p-4 border-r border-gray-200 overflow-y-auto">
+          <div className="space-y-4">
+            <div className="flex space-x-2">
               <button
                 className={`flex-1 py-2 text-sm font-medium ${
-                  activeSidebarTab === 'tools' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'
-                }`}
+                  activeSidebarTab === 'tools' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                } rounded-md`}
                 onClick={() => setActiveSidebarTab('tools')}
               >
                 Tools
               </button>
               <button
                 className={`flex-1 py-2 text-sm font-medium ${
-                  activeSidebarTab === 'layers' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'
-                }`}
+                  activeSidebarTab === 'layers' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                } rounded-md`}
                 onClick={() => setActiveSidebarTab('layers')}
               >
                 Layers
               </button>
               <button
                 className={`flex-1 py-2 text-sm font-medium ${
-                  activeSidebarTab === 'file' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'
-                }`}
+                  activeSidebarTab === 'file' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                } rounded-md`}
                 onClick={() => setActiveSidebarTab('file')}
               >
                 File
               </button>
             </div>
 
-            <div className="p-4">
-              {activeSidebarTab === 'tools' && (
-                <div className="space-y-4">
-                  <ToolPanel
-                    currentTool={currentTool}
-                    onToolChange={setCurrentTool}
-                    brushSize={brushSize}
-                    onBrushSizeChange={setBrushSize}
-                    zoom={zoom}
-                    onZoomChange={setZoom}
-                    onUndo={handleUndo}
-                    onRedo={handleRedo}
-                    onSave={handleSave}
-                    onExport={handleExport}
-                    onKeyboardShortcutsToggle={() => setShowKeyboardShortcuts(true)}
-                  />
+            {activeSidebarTab === 'tools' && (
+              <div className="space-y-4">
+                <ToolPanel
+                  currentTool={currentTool}
+                  onToolChange={(tool) => setCurrentTool(tool as DrawingTool)}
+                  brushSize={brushSize}
+                  onBrushSizeChange={setBrushSize}
+                  zoom={zoom}
+                  onZoomChange={setZoom}
+                  onUndo={handleUndo}
+                  onRedo={handleRedo}
+                  onSave={handleSave}
+                  onExport={handleExport}
+                  onKeyboardShortcutsToggle={() => setShowKeyboardShortcuts(true)}
+                />
 
-                  <ColorPicker
-                    currentColor={currentColor}
-                    onColorChange={setCurrentColor}
-                  />
+                <ColorPicker
+                  currentColor={currentColor}
+                  onColorChange={setCurrentColor}
+                />
 
+                <div className="mt-4 space-y-2">
                   <button
                     className="w-full p-2 text-sm bg-gray-100 rounded hover:bg-gray-200"
                     onClick={() => setActiveSidebarTab('brush')}
                   >
-                    Advanced Brush Settings
+                    Brush Settings
                   </button>
-
                   <button
                     className="w-full p-2 text-sm bg-gray-100 rounded hover:bg-gray-200"
                     onClick={() => setActiveSidebarTab('filters')}
@@ -495,60 +448,60 @@ export default function Draw() {
                     Filters & Effects
                   </button>
                 </div>
-              )}
+              </div>
+            )}
 
-              {activeSidebarTab === 'layers' && (
-                <LayerPanel
-                  layers={layers}
-                  activeLayerId={activeLayerId}
-                  onLayerSelect={setActiveLayerId}
-                  onLayerAdd={handleLayerAdd}
-                  onLayerRemove={handleLayerRemove}
-                  onLayerVisibilityToggle={handleLayerVisibilityToggle}
-                  onLayerMoveUp={handleLayerMoveUp}
-                  onLayerMoveDown={handleLayerMoveDown}
-                  onLayerOpacityChange={handleLayerOpacityChange}
-                  onLayerBlendModeChange={handleLayerBlendModeChange}
-                  onLayerGroupCreate={handleLayerGroupCreate}
-                />
-              )}
+            {activeSidebarTab === 'layers' && (
+              <LayerPanel
+                layers={layers}
+                activeLayerId={activeLayerId}
+                onLayerSelect={setActiveLayerId}
+                onLayerAdd={handleLayerAdd}
+                onLayerRemove={handleLayerRemove}
+                onLayerVisibilityToggle={handleLayerVisibilityToggle}
+                onLayerMoveUp={handleLayerMoveUp}
+                onLayerMoveDown={handleLayerMoveDown}
+                onLayerOpacityChange={handleLayerOpacityChange}
+                onLayerBlendModeChange={handleLayerBlendModeChange}
+                onLayerGroupCreate={handleLayerGroupCreate}
+              />
+            )}
 
-              {activeSidebarTab === 'file' && (
-                <FileManager
-                  onSave={handleSave}
-                  onOpen={handleOpen}
-                  onExport={handleExport}
-                  onNewProject={handleNewProject}
-                />
-              )}
+            {activeSidebarTab === 'file' && (
+              <FileManager
+                onSave={handleSave}
+                onOpen={handleOpen}
+                onExport={handleExport}
+                onNewProject={handleNewProject}
+              />
+            )}
 
-              {activeSidebarTab === 'filters' && (
-                <FiltersPanel
-                  filters={filters}
-                  onFilterChange={handleFilterChange}
-                  onApplyFilter={handleApplyFilter}
-                  onResetFilters={handleResetFilters}
-                />
-              )}
+            {activeSidebarTab === 'filters' && (
+              <FiltersPanel
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onApplyFilter={handleApplyFilter}
+                onResetFilters={handleResetFilters}
+              />
+            )}
 
-              {activeSidebarTab === 'brush' && (
-                <BrushSettings
-                  brushSize={brushSize}
-                  onBrushSizeChange={setBrushSize}
-                  brushOpacity={brushOpacity}
-                  onBrushOpacityChange={setBrushOpacity}
-                  brushHardness={brushHardness}
-                  onBrushHardnessChange={setBrushHardness}
-                  brushFlow={brushFlow}
-                  onBrushFlowChange={setBrushFlow}
-                  brushSpacing={brushSpacing}
-                  onBrushSpacingChange={setBrushSpacing}
-                  presets={brushPresets}
-                  onPresetSelect={handleBrushPresetSelect}
-                  onPresetSave={handleBrushPresetSave}
-                />
-              )}
-            </div>
+            {activeSidebarTab === 'brush' && (
+              <BrushSettings
+                brushSize={brushSize}
+                onBrushSizeChange={setBrushSize}
+                brushOpacity={brushOpacity}
+                onBrushOpacityChange={setBrushOpacity}
+                brushHardness={brushHardness}
+                onBrushHardnessChange={setBrushHardness}
+                brushFlow={brushFlow}
+                onBrushFlowChange={setBrushFlow}
+                brushSpacing={brushSpacing}
+                onBrushSpacingChange={setBrushSpacing}
+                presets={brushPresets}
+                onPresetSelect={handleBrushPresetSelect}
+                onPresetSave={handleBrushPresetSave}
+              />
+            )}
           </div>
         </div>
 

@@ -1,16 +1,11 @@
-import { useEffect } from "react";
-import type { Route } from "./+types/home";
-import { Link, useNavigate } from "react-router";
+'use client';
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Drawing Masters App" },
-    { name: "description", content: "Professional Art Drawing Application" },
-  ];
-}
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Home() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Use useEffect to access window object only on the client side
   useEffect(() => {
@@ -22,7 +17,7 @@ export default function Home() {
   const handleDrawClick = () => {
     console.log("Draw button clicked, attempting to navigate to /draw");
     // Try programmatic navigation as an alternative
-    navigate("/draw");
+    router.push('/draw');
   };
 
   return (
@@ -33,16 +28,15 @@ export default function Home() {
           A professional art drawing application for creating stunning digital artwork.
         </p>
         <div className="flex flex-col items-center gap-4">
-          {/* Try different variations of the link */}
           <Link
-            to="/draw"
+            href="/draw"
             className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
           >
             Start Drawing (Link with /draw)
           </Link>
 
           <Link
-            to="draw"
+            href="draw"
             className="px-6 py-3 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 transition-colors"
           >
             Start Drawing (Link with draw)
